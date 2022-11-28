@@ -116,7 +116,7 @@ def create_model():
 
 
 
-data_path = "Font_Recognition-DeepFont/font_patch/"
+data_path = "font_patch/"
 data=[]
 labels=[]
 imagePaths = sorted(list(paths.list_images(data_path)))
