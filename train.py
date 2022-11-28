@@ -117,9 +117,6 @@ def main(batch_size=128,epochs=25,data_path="font_patch/"):
     augument=["blur","noise","affine","gradient"]
     a=itertools.combinations(augument, 4)
 
-    for i in list(a): 
-        print(list(i))
-
     for imagePath in imagePaths:
         label = imagePath.split(os.path.sep)[-2]
         label = conv_label(label)
@@ -138,7 +135,6 @@ def main(batch_size=128,epochs=25,data_path="font_patch/"):
 
             for i in list(a): 
                 combinations=list(i)
-                print(len(combinations))
                 temp_img = pil_img
                 for j in combinations:
                 
@@ -147,9 +143,7 @@ def main(batch_size=128,epochs=25,data_path="font_patch/"):
                         
                     elif j == 'blur':
                         temp_img = blur_image(temp_img)
-                        #imshow(blur_img)
                         
-        
                     elif j == 'affine':
                         open_cv_affine = np.array(pil_img)
                         temp_img = affine_rotation(open_cv_affine)
@@ -177,7 +171,7 @@ def main(batch_size=128,epochs=25,data_path="font_patch/"):
     K.set_image_data_format('channels_last')
 
     model= create_model()
-    sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+    sgd = optimizers.SGD(learning_rate=0.01, decay=1e-6, momentum=0.9, nesterov=True)
     model.compile(loss='mean_squared_error', optimizer=sgd, metrics=['accuracy'])
     early_stopping=callbacks.EarlyStopping(monitor='val_loss', min_delta=0, patience=10, verbose=0, mode='min')
 
@@ -205,4 +199,4 @@ if __name__ == '__main__':
     parser.add_argument('--epochs','-e',required=True)
 
     args = parser.parse_args()
-    main(epochs=args.epochs)
+    main(epochs=int(args.epochs))
