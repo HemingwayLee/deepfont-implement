@@ -107,99 +107,102 @@ def create_model():
     return model
 
 
+def main(batch_size=128,epochs=25,data_path="font_patch/"):
+    data=[]
+    labels=[]
+    imagePaths = sorted(list(paths.list_images(data_path)))
+    random.seed(42)
+    random.shuffle(imagePaths)
 
-data_path = "font_patch/"
-data=[]
-labels=[]
-imagePaths = sorted(list(paths.list_images(data_path)))
-random.seed(42)
-random.shuffle(imagePaths)
+    augument=["blur","noise","affine","gradient"]
+    a=itertools.combinations(augument, 4)
 
-augument=["blur","noise","affine","gradient"]
-a=itertools.combinations(augument, 4)
+    for i in list(a): 
+        print(list(i))
 
-for i in list(a): 
-    print(list(i))
+    for imagePath in imagePaths:
+        label = imagePath.split(os.path.sep)[-2]
+        label = conv_label(label)
+        pil_img = pil_image(imagePath)
+        #imshow(pil_img)
+        
+        org_img = img_to_array(pil_img)
+        #print(org_img.shape)
+        data.append(org_img)
+        labels.append(label)
+        
+        augument=["noise","blur","affine","gradient"]
+        for l in range(0,len(augument)):
+        
+            a=itertools.combinations(augument, l+1)
 
-counter=0
-for imagePath in imagePaths:
-    label = imagePath.split(os.path.sep)[-2]
-    label = conv_label(label)
-    pil_img = pil_image(imagePath)
-    #imshow(pil_img)
+            for i in list(a): 
+                combinations=list(i)
+                print(len(combinations))
+                temp_img = pil_img
+                for j in combinations:
+                
+                    if j == 'noise':
+                        temp_img = noise_image(temp_img)
+                        
+                    elif j == 'blur':
+                        temp_img = blur_image(temp_img)
+                        #imshow(blur_img)
+                        
+        
+                    elif j == 'affine':
+                        open_cv_affine = np.array(pil_img)
+                        temp_img = affine_rotation(open_cv_affine)
+
+                    elif j == 'gradient':
+                        open_cv_gradient = np.array(pil_img)
+                        temp_img = gradient_fill(open_cv_gradient)
     
-    org_img = img_to_array(pil_img)
-    #print(org_img.shape)
-    data.append(org_img)
-    labels.append(label)
-    
-    augument=["noise","blur","affine","gradient"]
-    for l in range(0,len(augument)):
-    
-        a=itertools.combinations(augument, l+1)
-
-        for i in list(a): 
-            combinations=list(i)
-            print(len(combinations))
-            temp_img = pil_img
-            for j in combinations:
-            
-                if j == 'noise':
-                    temp_img = noise_image(temp_img)
-                    
-                elif j == 'blur':
-                    temp_img = blur_image(temp_img)
-                    #imshow(blur_img)
-                    
-    
-                elif j == 'affine':
-                    open_cv_affine = np.array(pil_img)
-                    temp_img = affine_rotation(open_cv_affine)
-
-                elif j == 'gradient':
-                    open_cv_gradient = np.array(pil_img)
-                    temp_img = gradient_fill(open_cv_gradient)
-  
-            temp_img = img_to_array(temp_img)
-            data.append(temp_img)
-            labels.append(label)
+                temp_img = img_to_array(temp_img)
+                data.append(temp_img)
+                labels.append(label)
 
 
-data = np.asarray(data, dtype="float") / 255.0
-labels = np.array(labels)
+    data = np.asarray(data, dtype="float") / 255.0
+    labels = np.array(labels)
 
-# partition the data into training and testing splits using 75% of
-# the data for training and the remaining 25% for testing
-(trainX, testX, trainY, testY) = train_test_split(data, labels, test_size=0.25, random_state=42)
-# convert the labels from integers to vectors
-trainY = to_categorical(trainY, num_classes=5)
-testY = to_categorical(testY, num_classes=5)
+    # partition the data into training and testing splits using 75% of
+    # the data for training and the remaining 25% for testing
+    (trainX, testX, trainY, testY) = train_test_split(data, labels, test_size=0.25, random_state=42)
+    # convert the labels from integers to vectors
+    trainY = to_categorical(trainY, num_classes=5)
+    testY = to_categorical(testY, num_classes=5)
 
-aug = ImageDataGenerator(rotation_range=30, width_shift_range=0.1,height_shift_range=0.1, shear_range=0.2, zoom_range=0.2,horizontal_flip=True)
-K.set_image_data_format('channels_last')
+    aug = ImageDataGenerator(rotation_range=30, width_shift_range=0.1,height_shift_range=0.1, shear_range=0.2, zoom_range=0.2,horizontal_flip=True)
+    K.set_image_data_format('channels_last')
 
-batch_size = 128
-epochs = 2
-model= create_model()
-sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-model.compile(loss='mean_squared_error', optimizer=sgd, metrics=['accuracy'])
-early_stopping=callbacks.EarlyStopping(monitor='val_loss', min_delta=0, patience=10, verbose=0, mode='min')
+    model= create_model()
+    sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+    model.compile(loss='mean_squared_error', optimizer=sgd, metrics=['accuracy'])
+    early_stopping=callbacks.EarlyStopping(monitor='val_loss', min_delta=0, patience=10, verbose=0, mode='min')
 
-filepath="top_model.h5"
-checkpoint = callbacks.ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
+    filepath="top_model.h5"
+    checkpoint = callbacks.ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 
-callbacks_list = [early_stopping,checkpoint]
+    callbacks_list = [early_stopping,checkpoint]
 
-model.fit(trainX, 
-    trainY,
-    shuffle=True,
-    batch_size=batch_size,
-    epochs=epochs,
-    verbose=1,
-    validation_data=(testX, testY),
-    callbacks=callbacks_list)
-score = model.evaluate(testX, testY, verbose=0)
+    model.fit(trainX, 
+        trainY,
+        shuffle=True,
+        batch_size=batch_size,
+        epochs=epochs,
+        verbose=1,
+        validation_data=(testX, testY),
+        callbacks=callbacks_list)
+    score = model.evaluate(testX, testY, verbose=0)
 
-print('Test loss:', score[0])
-print('Test accuracy:', score[1])
+    print('Test loss:', score[0])
+    print('Test accuracy:', score[1])
 
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Put training parameters')
+    parser.add_argument('--epochs','-e',required=True)
+
+    args = parser.parse_args()
+    main(epochs=args.epochs)
