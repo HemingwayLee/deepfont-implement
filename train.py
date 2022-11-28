@@ -1,21 +1,20 @@
-from matplotlib.pyplot import imshow
-import matplotlib.cm as cm
-import matplotlib.pylab as plt
-from keras.preprocessing.image import ImageDataGenerator
-import numpy as np
-import PIL
-from PIL import ImageFilter
-import cv2
-import itertools
-import random
-from imutils import paths
+# from matplotlib.pyplot import imshow
+# import matplotlib.cm as cm
+# import matplotlib.pylab as plt
 import os
-from keras import optimizers
+import random
+import PIL
+import cv2
+import argparse
+import itertools
+import numpy as np
+from imutils import paths
 from tensorflow.keras.utils import img_to_array
 from sklearn.model_selection import train_test_split
 from keras.utils import to_categorical
-from keras import callbacks
+from keras import callbacks, optimizers
 from keras.models import Sequential
+from keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.layers import BatchNormalization
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D , UpSampling2D ,Conv2DTranspose
@@ -28,7 +27,6 @@ def pil_image(img_path):
     return pil_im
 
 def noise_image(pil_im):
-    # Adding Noise to image
     img_array = np.asarray(pil_im)
     mean = 0.0   # some constant
     std = 5   # some constant (standard deviation)
@@ -40,14 +38,12 @@ def noise_image(pil_im):
     return noise_img
 
 def blur_image(pil_im):
-    #Adding Blur to image 
-    blur_img = pil_im.filter(ImageFilter.GaussianBlur(radius=3)) # ouput
+    blur_img = pil_im.filter(PIL.ImageFilter.GaussianBlur(radius=3)) # ouput
     #imshow(blur_img)
     blur_img=blur_img.resize((105,105))
     return blur_img
 
 def affine_rotation(img):
-    
     #img=cv2.imread(img_path,0)
     rows, columns = img.shape
 
@@ -83,7 +79,6 @@ def conv_label(label):
 def create_model():
     model=Sequential()
 
-    # Cu Layers 
     model.add(Conv2D(64, kernel_size=(48, 48), activation='relu', input_shape=(105,105,1)))
     model.add(BatchNormalization())
     model.add(MaxPooling2D(pool_size=(2, 2)))
@@ -98,7 +93,6 @@ def create_model():
     model.add(Conv2DTranspose(64, (12,12), strides = (2,2), activation = 'relu', padding='same', kernel_initializer='uniform'))
     model.add(UpSampling2D(size=(2, 2)))
 
-    #Cs Layers
     model.add(Conv2D(256, kernel_size=(12, 12), activation='relu'))
     model.add(Conv2D(256, kernel_size=(12, 12), activation='relu'))
     model.add(Conv2D(256, kernel_size=(12, 12), activation='relu'))
@@ -134,7 +128,6 @@ for imagePath in imagePaths:
     pil_img = pil_image(imagePath)
     #imshow(pil_img)
     
-    # Adding original image
     org_img = img_to_array(pil_img)
     #print(org_img.shape)
     data.append(org_img)
@@ -152,23 +145,19 @@ for imagePath in imagePaths:
             for j in combinations:
             
                 if j == 'noise':
-                    # Adding Noise image
                     temp_img = noise_image(temp_img)
                     
                 elif j == 'blur':
-                    # Adding Blur image
                     temp_img = blur_image(temp_img)
                     #imshow(blur_img)
                     
     
                 elif j == 'affine':
                     open_cv_affine = np.array(pil_img)
-                    # Adding affine rotation image
                     temp_img = affine_rotation(open_cv_affine)
 
                 elif j == 'gradient':
                     open_cv_gradient = np.array(pil_img)
-                    # Adding gradient image
                     temp_img = gradient_fill(open_cv_gradient)
   
             temp_img = img_to_array(temp_img)
@@ -197,17 +186,20 @@ model.compile(loss='mean_squared_error', optimizer=sgd, metrics=['accuracy'])
 early_stopping=callbacks.EarlyStopping(monitor='val_loss', min_delta=0, patience=10, verbose=0, mode='min')
 
 filepath="top_model.h5"
-
 checkpoint = callbacks.ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 
 callbacks_list = [early_stopping,checkpoint]
 
-model.fit(trainX, trainY,shuffle=True,
-          batch_size=batch_size,
-          epochs=epochs,
-          verbose=1,
-          validation_data=(testX, testY),callbacks=callbacks_list)
+model.fit(trainX, 
+    trainY,
+    shuffle=True,
+    batch_size=batch_size,
+    epochs=epochs,
+    verbose=1,
+    validation_data=(testX, testY),
+    callbacks=callbacks_list)
 score = model.evaluate(testX, testY, verbose=0)
+
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
 
