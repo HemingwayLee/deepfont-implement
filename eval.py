@@ -41,7 +41,15 @@ if __name__ == '__main__':
     data = np.asarray(data, dtype="float") / 255.0
 
     model = load_model('top_model.h5')
-    y = model.predict_classes(data)
-    label = rev_conv_label(int(y[0]))
+    # y = model.predict_classes(data)
+    predict_y=model.predict(data) 
+    print("1")
+    print(predict_y)
+
+    classes_y=np.argmax(predict_y, axis=1)
+    print("2")
+    print(classes_y)
+
+    label = rev_conv_label(int(classes_y))
 
     print(f"{img_path}: {label}")
