@@ -1,4 +1,4 @@
-FROM python:3.7
+FROM python:3.7.15
 
 RUN mkdir -p /home/proj/
 COPY . /home/proj/
