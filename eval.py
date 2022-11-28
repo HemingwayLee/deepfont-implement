@@ -35,6 +35,7 @@ def rev_conv_label(label):
 if __name__ == '__main__':
     img_path="sample/sample.jpg"
     pil_im =PIL.Image.open(img_path).convert('L')
+    pil_im=pil_im.resize((105,105))
     org_img = img_to_array(pil_im)
     data=[]
     data.append(org_img)
