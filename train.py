@@ -8,8 +8,6 @@ from PIL import ImageFilter
 import cv2
 import itertools
 import random
-import keras
-import imutils
 from imutils import paths
 import os
 from keras import optimizers
@@ -180,7 +178,6 @@ for imagePath in imagePaths:
 
 data = np.asarray(data, dtype="float") / 255.0
 labels = np.array(labels)
-print("Success")
 
 # partition the data into training and testing splits using 75% of
 # the data for training and the remaining 25% for testing
@@ -193,7 +190,7 @@ aug = ImageDataGenerator(rotation_range=30, width_shift_range=0.1,height_shift_r
 K.set_image_data_format('channels_last')
 
 batch_size = 128
-epochs = 50
+epochs = 2
 model= create_model()
 sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
 model.compile(loss='mean_squared_error', optimizer=sgd, metrics=['accuracy'])
@@ -205,15 +202,12 @@ checkpoint = callbacks.ModelCheckpoint(filepath, monitor='val_loss', verbose=1, 
 
 callbacks_list = [early_stopping,checkpoint]
 
-# TODO: here...
-# model.fit(trainX, trainY,shuffle=True,
-#           batch_size=batch_size,
-#           epochs=epochs,
-#           verbose=1,
-#           validation_data=(testX, testY),callbacks=callbacks_list)
-# score = model.evaluate(testX, testY, verbose=0)
-# print('Test loss:', score[0])
-# print('Test accuracy:', score[1])
-
-print("okay")
+model.fit(trainX, trainY,shuffle=True,
+          batch_size=batch_size,
+          epochs=epochs,
+          verbose=1,
+          validation_data=(testX, testY),callbacks=callbacks_list)
+score = model.evaluate(testX, testY, verbose=0)
+print('Test loss:', score[0])
+print('Test accuracy:', score[1])
 
