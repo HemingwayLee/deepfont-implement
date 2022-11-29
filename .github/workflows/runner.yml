@@ -14,9 +14,9 @@ jobs:
       - name: Build Dockerfile
         run: docker build -t mydeepfont .
       - name: Train for 1 epoch
-        run: docker run -it --rm -v $(pwd):/home/proj/ mydeepfont bash -c 'python3 train.py -e 1'
+        run: docker run -v $(pwd):/home/proj/ mydeepfont bash -c 'python3 train.py -e 1'
       - name: Check model file
         run: ls
       - name: Evaluation
-        run: docker run -it --rm -v $(pwd):/home/proj/ mydeepfont bash -c 'python3 eval.py'
+        run: docker run -v $(pwd):/home/proj/ mydeepfont bash -c 'python3 eval.py'
 
