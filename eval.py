@@ -7,20 +7,20 @@ import numpy as np
 from tensorflow.keras.utils import img_to_array
 from keras.models import load_model
 
+
 def rev_conv_label(label):
     if label == 0 :
-        return 'Lato'
+        return 'AvenirNext'
     elif label == 1:
-        return 'Raleway'
+        return 'Keyboard'
     elif label == 2 :
-        return 'Roboto'
+        return 'SFCompactRounded-Bold'
     elif label == 3 :
-        return 'Sansation'
-    elif label == 4:
-        return 'Walkway'
+        return 'Times'
+
 
 if __name__ == '__main__':
-    img_path="sample/sample.jpg"
+    img_path="test_data/Times.jpg"
     pil_im =PIL.Image.open(img_path).convert('L')
     pil_im=pil_im.resize((105,105))
     org_img = img_to_array(pil_im)

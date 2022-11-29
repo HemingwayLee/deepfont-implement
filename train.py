@@ -65,16 +65,14 @@ def gradient_fill(image):
     return laplacian
 
 def conv_label(label):
-    if label == 'Lato':
+    if label == 'AvenirNext':
         return 0
-    elif label == 'Raleway':
+    elif label == 'Keyboard':
         return 1
-    elif label == 'Roboto':
+    elif label == 'SFCompactRounded-Bold':
         return 2
-    elif label == 'Sansation':
+    elif label == 'Times':
         return 3
-    elif label == 'Walkway':
-        return 4
 
 def create_model():
     model=Sequential()
@@ -107,7 +105,7 @@ def create_model():
     return model
 
 
-def main(batch_size=128,epochs=25,data_path="font_patch/"):
+def main(batch_size=128,epochs=25,data_path="train_data/"):
     data=[]
     labels=[]
     imagePaths = sorted(list(paths.list_images(data_path)))
