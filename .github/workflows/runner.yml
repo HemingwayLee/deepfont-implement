@@ -16,7 +16,7 @@ jobs:
       - name: Train for 1 epoch
         run: docker run -v $(pwd):/home/proj/ mydeepfont bash -c 'python3 train.py -e 1'
       - name: Check model file
-        run: ls
+        run: ls -lh
       - name: Evaluate the model
         run: docker run -v $(pwd):/home/proj/ mydeepfont bash -c 'python3 eval.py -d test_data/Times.jpg -m top_model.h5'
 
