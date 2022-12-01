@@ -1,6 +1,8 @@
 # deepfont-implement
 * How to identify fonts in pictures using deep learning? we can do visual font recognition (VFR) using DeepFont algorithm (from Adobe). The paper is [here](https://arxiv.org/pdf/1507.03196v1.pdf)
-* This is from [Font_Recognition-DeepFont](https://github.com/robinreni96/Font_Recognition-DeepFont), in this repo
+<img width="828" alt="res" src="https://user-images.githubusercontent.com/8428372/205088069-94c51227-4870-4d87-bd0f-52ab16950715.png">
+
+* This implementation is from [Font_Recognition-DeepFont](https://github.com/robinreni96/Font_Recognition-DeepFont), in this repo
   * `requirements.txt` and `Dockerfile` are added so we can set it up easily
   * Github action is added so we can make sure Dockerfile do work
   * Data generation script `create_data.py` is provided
