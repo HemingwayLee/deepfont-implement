@@ -26,3 +26,17 @@ python3 create_data.py -c 1 -f data
 ```
 python3 train.py -e 1
 ```
+
+* evaluate
+  * `-d`: the path of testing file
+  * `-m`: model filename
+```
+python3 eval.py -d test_data/Times.jpg -m top_model.h5
+```
+
+# Run by docker
+* Build Dockerfile
+```
+docker build -t mydeepfont .
+```
+
