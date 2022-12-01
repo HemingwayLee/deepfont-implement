@@ -27,11 +27,13 @@ def get_data(img_path):
     data.append(org_img)
     data = np.asarray(data, dtype="float") / 255.0
 
+    return data
 
-def evaluate(img_path):
+
+def evaluate(img_path, model_file):
     data = get_data(img_path)
 
-    model = load_model('top_model.h5')
+    model = load_model(model_file)
     # y = model.predict_classes(data)
     predict_y=model.predict(data) 
     print(predict_y)
@@ -45,7 +47,8 @@ def evaluate(img_path):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Put data creation parameters')
-    parser.add_argument('--path','-p',required=True)
+    parser.add_argument('--data','-d', required=True)
+    parser.add_argument('--model','-m', required=True)
     
     args = parser.parse_args()
-    evaluate(args.path)
+    evaluate(args.data, args.model)

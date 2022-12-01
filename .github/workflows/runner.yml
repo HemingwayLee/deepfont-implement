@@ -17,6 +17,6 @@ jobs:
         run: docker run -v $(pwd):/home/proj/ mydeepfont bash -c 'python3 train.py -e 1'
       - name: Check model file
         run: ls
-      - name: Evaluation
-        run: docker run -v $(pwd):/home/proj/ mydeepfont bash -c 'python3 eval.py -p test_data/Times.jpg'
+      - name: Evaluate the model
+        run: docker run -v $(pwd):/home/proj/ mydeepfont bash -c 'python3 eval.py -d test_data/Times.jpg -m top_model.h5'
 
