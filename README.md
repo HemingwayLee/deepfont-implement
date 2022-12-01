@@ -40,3 +40,11 @@ python3 eval.py -d test_data/Times.jpg -m top_model.h5
 docker build -t mydeepfont .
 ```
 
+* Run dockerfile
+  * access `http://127.0.0.1:8888` by browser
+```
+docker run -it --rm -p8888:8888 mydeepfont
+```
+
+
+
