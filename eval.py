@@ -19,14 +19,17 @@ def rev_conv_label(label):
         return 'Times'
 
 
-if __name__ == '__main__':
-    img_path="test_data/Times.jpg"
+def get_data(img_path):
     pil_im =PIL.Image.open(img_path).convert('L')
     pil_im=pil_im.resize((105,105))
     org_img = img_to_array(pil_im)
     data=[]
     data.append(org_img)
     data = np.asarray(data, dtype="float") / 255.0
+
+
+def evaluate(img_path):
+    data = get_data(img_path)
 
     model = load_model('top_model.h5')
     # y = model.predict_classes(data)
@@ -37,5 +40,12 @@ if __name__ == '__main__':
     print(classes_y)
 
     label = rev_conv_label(int(classes_y))
-
     print(f"{img_path}: {label}")
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Put data creation parameters')
+    parser.add_argument('--path','-p',required=True)
+    
+    args = parser.parse_args()
+    evaluate(args.path)

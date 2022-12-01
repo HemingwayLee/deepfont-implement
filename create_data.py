@@ -21,11 +21,11 @@ def create_image(size, message, font):
     return image
 
 
-def main(count):
+def main(count,folder):
     font_files = glob.glob("fonts/*")
     for font_file in font_files:
-        foldername = Path(font_file).stem
-        Path(f"train_data/{foldername}").mkdir(parents=True, exist_ok=True)
+        font_folder_name = Path(font_file).stem
+        Path(f"{folder}/{font_folder_name}").mkdir(parents=True, exist_ok=True)
 
         for c in range(count):
             height = 80
@@ -34,14 +34,15 @@ def main(count):
             font = ImageFont.truetype(font_file, fontsize)
             msg = get_random_text(random.randint(6, 18))
             pil_img = create_image((width, height), msg, font)
-            pil_img.save(f"train_data/{foldername}/{msg}.jpg")
+            pil_img.save(f"{folder}/{font_folder_name}/{msg}.jpg")
             # plt.imshow(pil_img)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Put data creation parameters')
     parser.add_argument('--count','-c',required=True)
+    parser.add_argument('--folder','-f',required=True)
 
     args = parser.parse_args()
-    main(int(args.count))
+    main(int(args.count), args.folder)
 
